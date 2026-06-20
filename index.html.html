@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APX</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { overflow-x: hidden; }
+
+    #mobileMenu { display: none; }
+    #mobileMenu.open { display: flex; }
+
+    /* Reveal animation */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 1s cubic-bezier(0.12, 0.9, 0.24, 1),
+                  transform 1s cubic-bezier(0.12, 0.9, 0.24, 1);
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Feature items slide-in */
+    .feature-item {
+      opacity: 0;
+      transform: translateX(60px);
+      transition: opacity 0.9s cubic-bezier(0.12, 0.9, 0.24, 1),
+                  transform 0.9s cubic-bezier(0.12, 0.9, 0.24, 1);
+    }
+    .feature-item.active {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Card items slide-up */
+    .card-item {
+      opacity: 0;
+      transform: translateY(60px);
+      transition: opacity 0.9s cubic-bezier(0.12, 0.9, 0.24, 1),
+                  transform 0.9s cubic-bezier(0.12, 0.9, 0.24, 1);
+    }
+    .card-item.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Mobile/Desktop visibility */
+    @media (max-width: 1023px) {
+      .floating-right-group,
+      .floating-yellow-card,
+      .desktop-hero-wrap,
+      .desktop-provider-block { display: none !important; }
+    }
+    @media (min-width: 1024px) {
+      .mobile-hero-img,
+      .mobile-provider-block { display: none !important; }
+    }
+
+    /* Desktop provider block positioning */
+    @media (min-width: 1024px) {
+      .desktop-provider-block { position: relative; width: 100%; }
+      .desktop-provider-block > img.bg-slab { width: 100%; height: auto; display: block; border-radius: 15px; }
+      .desktop-content-layer {
+        position: absolute;
+        top: 3.5%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 1222px;
+      }
+      .desktop-left-text { position: absolute; top: 40%; left: 5%; max-width: 26%; }
+      .desktop-right-features { position: absolute; top: 2%; right: 0%; width: 26%; max-width: 308px; }
+    }
+
+    @media (min-width: 1024px) and (max-width: 1279px) {
+      .desktop-left-text h3 { font-size: 15px; }
+      .desktop-left-text p  { font-size: 12px; }
+      .desktop-left-text button { font-size: 13px; width: 160px; height: 34px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<section class="sticky top-0 z-50 w-full pt-[10px]">
+  <div id="headerBox"
+       class="mx-auto max-w-[calc(100%-40px)] lg:max-w-[1220px]
+              bg-white/95 backdrop-blur-md
+              rounded-[11px_11px_26px_26px]
+              py-4 sm:py-5 lg:py-6 px-4 sm:px-6
+              transition-all duration-300">
+
+    <div class="flex items-center justify-between gap-4">
+
+      <!-- Logo + Nav -->
+      <div class="flex items-center gap-[30px] min-w-0">
+        <div class="flex items-center flex-shrink-0">
+          <h1 class="text-[28px] sm:text-[32px] lg:text-[35px] font-extrabold leading-none">APX</h1>
+          <div class="ml-[4px] mt-[10px]">
+            <div class="grid grid-cols-2 gap-[1px]">
+              <div class="w-[7px] h-[7px] bg-[#5FBF8F] rounded-[2px]"></div>
+              <div class="w-[7px] h-[7px] bg-[#D96C6C] rounded-[2px]"></div>
+              <div class="w-[7px] h-[7px] bg-white border border-black rounded-[2px]"></div>
+              <div class="w-[7px] h-[7px] bg-[#E6C15A] rounded-[2px]"></div>
+            </div>
+          </div>
+        </div>
+        <nav class="hidden lg:flex items-center gap-4 min-w-0">
+          <span class="text-[14px] font-medium cursor-pointer whitespace-nowrap">About</span>
+          <span class="text-[14px] font-medium cursor-pointer whitespace-nowrap">For Agents</span>
+          <span class="text-[14px] font-medium cursor-pointer whitespace-nowrap">For Providers</span>
+          <span class="text-[14px] font-medium cursor-pointer whitespace-nowrap">Pricing</span>
+        </nav>
+      </div>
+
+      <!-- Right actions -->
+      <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+        <div class="hidden lg:flex items-center gap-3 flex-shrink-0">
+          <span class="text-[15px] font-medium cursor-pointer whitespace-nowrap">Log In</span>
+          <div class="h-[46px] px-5 rounded-md border-[1.5px] border-[#2B62D7] bg-[#2B62D7] text-white
+                      hover:bg-transparent hover:text-[#074FE9] transition-all duration-300
+                      flex items-center justify-center cursor-pointer">
+            <span class="text-[15px] font-medium whitespace-nowrap">Register for Beta Access</span>
+          </div>
+        </div>
+        <!-- Hamburger -->
+        <button onclick="toggleMobileMenu()" class="flex lg:hidden w-[44px] h-[44px] items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-[44px] h-[44px]" viewBox="0 0 40 40">
+            <rect width="40" height="40" fill="white"/>
+            <rect x="6.7" y="10" width="27" height="2" rx="1" fill="#121212"/>
+            <rect x="6.7" y="18" width="27" height="2" rx="1" fill="#121212"/>
+            <rect x="6.7" y="26" width="27" height="2" rx="1" fill="#121212"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobileMenu" class="flex-col gap-4 border-t border-gray-100 pt-5 mt-5">
+      <span>About</span>
+      <span>For Agents</span>
+      <span>For Providers</span>
+      <span>Pricing</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ HERO ═══ -->
+<section class="w-full mt-[10px]">
+  <div class="mx-auto w-full md:w-[calc(100%-40px)] lg:w-[1000px] xl:w-[1220px]">
+    <div class="bg-[rgba(247,249,254,1)] rounded-[16px] min-h-[auto] lg:min-h-[480px] xl:min-h-[520px]
+                flex flex-col lg:flex-row items-center justify-between
+                gap-[24px] sm:gap-[30px] lg:gap-[40px]
+                px-[16px] sm:px-[28px] lg:px-[35px] py-[28px] sm:py-[32px] lg:py-[40px]">
+
+      <!-- Left text -->
+      <div class="w-full lg:w-1/2 text-center lg:text-left">
+        <h1 class="text-[11px] sm:text-[12px] font-semibold uppercase text-[rgba(7,79,233,1)] leading-[15.9px]">
+          The Agent Partner Exchange platform
+        </h1>
+        <div class="mt-[8px] sm:mt-[10px]">
+          <h2 class="text-[26px] sm:text-[36px] md:text-[44px] lg:text-[48px] xl:text-[54px] font-bold leading-[1.1] text-black">Smarter</h2>
+          <h2 class="text-[26px] sm:text-[36px] md:text-[44px] lg:text-[48px] xl:text-[54px] font-bold leading-[1.1] text-black">partnerships in</h2>
+          <h2 class="text-[26px] sm:text-[36px] md:text-[44px] lg:text-[48px] xl:text-[54px] font-bold leading-[1.1] text-black">international education</h2>
+        </div>
+        <h3 class="mt-[10px] text-[13px] sm:text-[15px] lg:text-[16px] xl:text-[18px] font-normal leading-[1.6] text-black w-full max-w-[577px] mx-auto lg:mx-0">
+          Quickly search, connect, and form trusted partnerships worldwide.
+        </h3>
+        <div class="mt-[14px] sm:mt-[15px] w-full max-w-[247px] h-[43px] sm:h-[47px] xl:h-[49px] bg-black rounded-[8px]
+                    flex items-center justify-center mx-auto lg:mx-0 cursor-pointer px-[12px]">
+          <span class="text-white text-[13px] sm:text-[15px] xl:text-[16px] font-medium whitespace-nowrap">Register for Beta Access</span>
+        </div>
+      </div>
+
+      <!-- Mobile hero image -->
+      <div class="mobile-hero-img flex justify-center lg:hidden mt-[10px] px-[10px] sm:px-[18px] w-full">
+        <img src="img/Group 1000005414 1 (1).png"
+             class="w-full max-w-[368px] h-auto object-cover rounded-[10px]" alt="Hero" />
+      </div>
+
+      <!-- Desktop right image + floating cards -->
+      <div class="desktop-hero-wrap w-full lg:w-1/2 hidden lg:flex lg:justify-end relative">
+        <div class="relative">
+          <img src="img/Screenshot 2026-04-10 at 18.07.36 1.png"
+               class="block w-[360px] lg:w-[400px] xl:w-[440px] 2xl:w-[480px]
+                      h-[340px] lg:h-[370px] xl:h-[390px] 2xl:h-[400px]
+                      rounded-[10px] object-cover" alt="" />
+
+          <!-- Floating right cards -->
+          <div class="floating-right-group absolute right-[10px] top-[240px] xl:top-[260px] bottom-[-40px]">
+            <div class="w-[120px] xl:w-[130px] h-[110px] xl:h-[120px] bg-[rgba(232,85,87,1)] rounded-[6px] p-[8px]">
+              <div class="mt-[2px] absolute left-[20px] text-[11px] xl:text-[12px] font-semibold text-white leading-[14px]">Top Providers</div>
+            </div>
+            <div class="absolute top-[28px] xl:top-[30px] left-[18px] xl:left-[20px] w-[105px] xl:w-[115px] h-[90px] xl:h-[97px] bg-white rounded-[6px] shadow-[0px_4px_4px_rgba(0,0,0,0.15)] p-[4px]">
+              <img src="img/Rectangle 2513 (1).png" class="w-full h-[60px] xl:h-[65px] object-cover rounded-[4px]" alt="" />
+              <div class="text-[8px] mt-[4px] font-medium text-black">Kings</div>
+            </div>
+            <div class="absolute top-[34px] xl:top-[36px] left-[30px] xl:left-[35px] w-[104px] xl:w-[112px] h-[98px] xl:h-[105px] bg-white rounded-[6px] shadow-[0px_4px_4px_rgba(0,0,0,0.12)] p-[4px] rotate-[4deg]">
+              <img src="img/Rectangle 2513 (1).png" class="w-full h-[68px] xl:h-[75px] object-cover rounded-[4px]" alt="" />
+              <div class="text-[8px] xl:text-[9px] mt-[6px] absolute left-[10px] font-semibold text-black">Oxford Summer Camp</div>
+            </div>
+          </div>
+
+          <!-- Floating yellow + green card -->
+          <div class="floating-yellow-card absolute -left-[10px] top-[50px] xl:top-[55px] w-[130px] xl:w-[140px]">
+            <div class="bg-[rgba(246,201,82,1)] rounded-t-[3px] p-[8px] min-h-[88px] xl:min-h-[95px]">
+              <div class="text-[11px] xl:text-[12px] font-semibold leading-[14px] xl:leading-[15px] text-black">Active Agent Connections</div>
+              <div class="mt-[8px] xl:mt-[10px] flex items-center">
+                <img class="w-[34px] xl:w-[40px] h-[34px] xl:h-[40px] rounded-full border border-white" src="img/Background.png" alt="" />
+                <img class="w-[34px] xl:w-[40px] h-[34px] xl:h-[40px] rounded-full border border-white -ml-[8px] xl:-ml-[10px]" src="img/Background (1).png" alt="" />
+                <img class="w-[34px] xl:w-[40px] h-[34px] xl:h-[40px] rounded-full border border-white -ml-[8px] xl:-ml-[10px]" src="img/Background (2).png" alt="" />
+                <div class="ml-[6px] xl:ml-[8px] text-black text-[16px] xl:text-[18px]">+</div>
+              </div>
+            </div>
+            <div class="relative w-full h-[32px] xl:h-[34px] bg-[rgba(33,148,113,1)] rounded-b-[4px] flex items-center justify-center">
+              <span class="text-white text-[10.5px] xl:text-[11.5px] font-medium leading-[14px]">Request Connection</span>
+              <div class="hidden lg:block absolute xl:left-[60px] mt-[25px] rotate-[-21deg]">
+                <img src="img/Group 1000005345.png" class="w-[18px] h-[20px] xl:w-[24px] xl:h-[26px] object-contain" alt="" />
+              </div>
+              <div class="absolute top-[45px] -left-[40px] pointer-events-none rotate-[195deg]">
+                <svg width="500" height="180" viewBox="0 0 500 300" fill="none">
+                  <path d="M0 100 Q300 -90 480 260" stroke="rgba(13,44,111,1)" stroke-width="3.5" stroke-dasharray="6 6" fill="none"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ CTA BANNER ═══ -->
+<section class="w-full mt-[10px]">
+  <div class="mx-auto w-full md:w-[calc(100%-40px)] lg:w-[1000px] xl:w-[1220px]">
+    <div class="rounded-[16px] min-h-[auto] sm:min-h-[140px]
+                flex flex-col sm:flex-row items-start sm:items-center justify-between
+                gap-[16px] sm:gap-[20px] lg:gap-[30px]
+                px-[16px] sm:px-[24px] lg:px-[35px] py-[24px] sm:py-[28px] lg:py-[30px]">
+      <div class="max-w-full sm:max-w-[280px] lg:max-w-[330px]">
+        <h2 class="text-black text-[16px] sm:text-[18px] lg:text-[20px] leading-[1.5] font-normal">
+          Ready to transform how you form agent-provider partnerships?
+        </h2>
+      </div>
+      <div class="flex flex-col min-[480px]:flex-row items-stretch sm:items-center gap-[10px] w-full sm:w-auto">
+        <div class="w-full sm:w-[185px] lg:w-[202px] h-[44px] sm:h-[46px] lg:h-[49px] bg-[rgba(7,79,233,1)]
+                    flex items-center justify-center rounded-[8px] cursor-pointer">
+          <span class="text-white text-[13px] sm:text-[14px] lg:text-[16px] font-medium whitespace-nowrap">Register as a Provider</span>
+        </div>
+        <div class="w-full sm:w-[185px] lg:w-[204px] h-[44px] sm:h-[46px] lg:h-[49px]
+                    border-[1.5px] border-black flex items-center justify-center rounded-[8px] bg-white cursor-pointer">
+          <span class="text-black text-[13px] sm:text-[14px] lg:text-[16px] font-semibold whitespace-nowrap">Register as an Agent</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ ABOUT ═══ -->
+<section class="w-full mt-[10px]">
+  <div class="mx-auto w-full md:w-[calc(100%-40px)] lg:w-[1000px] xl:w-[1220px]">
+    <div class="max-w-[904px] mx-auto flex flex-col items-center justify-center text-center
+                gap-[14px] sm:gap-[16px] lg:gap-[20px]
+                py-[20px] sm:py-[25px] reveal">
+      <p class="text-[rgba(7,79,233,1)] text-[11px] sm:text-[12px] lg:text-[14px] font-bold uppercase tracking-[0.5px]">
+        About the Platform
+      </p>
+      <h2 class="text-[24px] sm:text-[34px] md:text-[42px] lg:text-[48px] xl:text-[52px] font-bold leading-[1.1] tracking-[-1px] max-w-[757px]">
+        Ready to transform your education agent partnerships?
+      </h2>
+      <p class="text-[13px] sm:text-[15px] lg:text-[16px] xl:text-[18px] leading-[1.6] max-w-[904px]">
+        Built for the international education sector, APExchange gives agents and providers a calmer, clearer way to discover each other.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ TABS ═══ -->
+<section class="w-full mt-[10px]">
+  <div class="mx-auto w-full md:w-[calc(100%-40px)] lg:w-[1000px] xl:w-[1220px]">
+    <div class="flex justify-center py-[16px] sm:py-[20px]">
+      <div class="w-[260px] sm:w-[287px] h-[44px] sm:h-[49px] border border-[rgba(184,184,184,1)] rounded-[25px] flex items-center px-[4px]">
+        <button id="providerTab" onclick="setTab('provider')"
+          class="w-[128px] sm:w-[140px] h-[36px] sm:h-[40px] rounded-[25px] flex items-center justify-center transition-all duration-200">
+          <span class="text-[13px] sm:text-[15px] lg:text-[16px] font-medium">For Providers</span>
+        </button>
+        <button id="agentTab" onclick="setTab('agent')"
+          class="flex-1 h-[36px] sm:h-[40px] rounded-[25px] flex items-center justify-center transition-all duration-200">
+          <span class="text-[13px] sm:text-[15px] lg:text-[16px] font-normal">For Agents</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Provider Content -->
+  <div id="providerContent">
+    <div class="mx-auto w-full md:w-[calc(100%-40px)] lg:w-[1000px] xl:w-[1220px]">
+
+      <!-- Mobile layout -->
+      <div class="mobile-provider-block flex flex-col gap-[16px] pb-[32px]">
+        <div class="w-full rounded-[15px] overflow-hidden bg-[rgba(247,249,254,1)] p-[14px] sm:p-[20px] md:p-[24px] flex flex-col gap-[14px] sm:gap-[16px]">
+          <img src="img/xZvFfmkFXXUPqBSeZG18L6lWrE 1.png" class="w-full rounded-[12px] object-cover" alt="" />
+          <div class="flex flex-col gap-[8px] sm:gap-[10px]">
+            <h3 class="text-[16px] sm:text-[18px] md:text-[20px] font-extrabold text-black"># For Providers</h3>
+            <p class="text-[13px] sm:text-[14px] md:text-[15px] font-medium leading-[1.6] text-black">
+              From boarding schools to summer camps, language courses, foundation and more, our platform caters to all types of course.
+            </p>
+            <button class="w-full sm:w-[184px] h-[40px] sm:h-[42px] bg-[rgba(37,105,249,1)] rounded-[8px] text-white font-semibold text-[13px] sm:text-[15px]">
+              Join as a Provider
+            </button>
+          </div>
+          <div class="flex flex-col gap-[5px] sm:gap-[6px]">
+            <div class="flex items-center gap-[8px] p-[9px] sm:p-[10px] bg-white rounded-[8px] shadow-sm">
+              <div class="w-[4px] h-[28px] flex-shrink-0 bg-[rgba(246,201,82,1)] rounded-full"></div>
+              <p class="text-[12px] sm:text-[13px] font-medium leading-[1.4]">Receive inbound requests from qualified agent partners</p>
+            </div>
+            <div class="flex items-center gap-[8px] p-[9px] sm:p-[10px] bg-white rounded-[8px] shadow-sm">
+              <div class="w-[4px] h-[28px] flex-shrink-0 bg-[rgba(114,171,61,1)] rounded-full"></div>
+              <p class="text-[12px] sm:text-[13px] font-medium leading-[1.4]">Set your commission rates, payment terms and conditions</p>
+            </div>
+            <div class="flex items-center gap-[8px] p-[9px] sm:p-[10px] bg-white rounded-[8px] shadow-sm">
+              <div class="w-[4px] h-[28px] flex-shrink-0 bg-[rgba(255,105,0,1)] rounded-full"></div>
+              <p class="text-[12px] sm:text-[13px] font-medium leading-[1.4]">Create rich programme listings with full detail pages</p>
+            </div>
+            <div class="flex items-center gap-[8px] p-[9px] sm:p-[10px] bg-white rounded-[8px] shadow-sm">
+              <div class="w-[4px] h-[28px] flex-shrink-0 bg-[rgba(161,88,235,1)] rounded-full"></div>
+              <p class="text-[12px] sm:text-[13px] font-medium leading-[1.4]">Manage your entire agent network from one dashboard</p>
+            </div>
+            <div class="flex items-center gap-[8px] p-[9px] sm:p-[10px] bg-white rounded-[8px] shadow-sm">
+              <div class="w-[4px] h-[28px] flex-shrink-0 bg-[rgba(246,201,82,1)] rounded-full"></div>
+              <p class="text-[12px] sm:text-[13px] font-medium leading-[1.4]">Review agent profiles before accepting connections</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile 3 cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-[12px] sm:gap-[14px] md:gap-[16px]">
+          <!-- Card 1 -->
+          <div class="border-[0.7px] border-[rgba(234,234,234,1)] rounded-[15px] p-[16px] sm:p-[18px] md:p-[20px] bg-white">
+            <h3 class="text-[16px] sm:text-[17px] md:text-[18px] font-bold leading-[1.2]">Easy Profile Creation</h3>
+            <p class="mt-[8px] sm:mt-[10px] text-[12px] sm:text-[13px] md:text-[14px] leading-[1.7] text-gray-600">
+              Describe your organisation to start receiving inbound agency representation requests
+            </p>
+            <div class="relative mt-[20px] w-full border-[0.7px] border-[rgba(234,234,234,1)] rounded-[12px] bg-white shadow-[0px_4px_15px_rgba(0,0,0,0.06)] p-[12px]">
+              <div class="relative flex items-center">
+                <img src="img/Group 1000005445.png" class="w-[34px] h-[34px] sm:w-[36px] sm:h-[36px] rounded-[8px] flex-shrink-0" alt="" />
+                <span class="ml-[8px] text-[12px] sm:text-[13px] font-semibold">Create profile</span>
+                <img src="img/Rectangle 2556.png" class="absolute -top-[22px] right-[6px] w-[55px] h-[53px] sm:w-[60px] sm:h-[58px] z-20" alt="" />
+                <img src="img/Rectangle 2555.png" class="absolute -top-[18px] right-[-6px] sm:right-[-8px] w-[53px] h-[57px] sm:w-[58px] sm:h-[62px] z-10" alt="" />
+              </div>
+              <div class="mt-[12px] border-t border-[rgba(227,227,227,1)]"></div>
+              <div class="flex flex-wrap gap-[4px] mt-[10px]">
+                <span class="px-[6px] py-[4px] text-[10px] whitespace-nowrap text-[rgba(81,80,90,1)] bg-[rgba(239,238,245,1)] rounded-[10px]">Organisation type</span>
+                <span class="px-[6px] py-[4px] text-[10px] whitespace-nowrap text-[rgba(81,80,90,1)] bg-[rgba(239,238,245,1)] rounded-[10px]">Team members</span>
+                <span class="px-[6px] py-[4px] text-[10px] whitespace-nowrap text-[rgba(81,80,90,1)] bg-[rgba(239,238,245,1)] rounded-[10px]">Location</span>
+                <span class="px-[6px] py-[4px] text-[10px] whitespace-nowrap text-[rgba(81,80,90,1)] bg-[rgba(239,238,245,1)] rounded-[10px]">Agreements</span>
+              </div>
+            </div>
+          </div>
+          <!-- Card 2 -->
+          <div class="border-[0.7px] border-[rgba(234,234,234,1)] rounded-[15px] p-[16px] sm:p-[18px] md:p-[20px] bg-white">
+            <h3 class="text-[16px] sm:text-[17px] md:text-[18px] font-bold leading-[1.2]">Easy Profile Creation</h3>
+            <p class="mt-[8px] sm:mt-[10px] text-[12px] sm:text-[13px] md:text-[14px] leading-[1.7] text-gray-600">
+              Describe your organisation to start receiving inbound agency representation requests
+            </p>
+            <div class="relative mt-[28px] sm:mt-[32px] w-full h-[95px]">
+              <div class="absolute bottom-0 left-[12px] right-0 h-[77px] rounded-[11px] bg-white z-10 border-[0.3px] border-[rgba(200,200,200,1)] shadow-[0px_4px_15px_rgba(0,0,0,0.09)] flex items-center px-[12px]">
+                <img src="img/Group 1000005380.png" class="w-[36px] h-[64px] sm:w-[38px] sm:h-[68px] rounded-[8px] border border-white flex-shrink-0" alt="" />
+              </div>
+              <div class="absolute top-0 left-0 right-0 h-[82px] rounded-[11px] bg-white z-20 border border-[rgba(220,220,220,1)] shadow-[0px_4px_10px_rgba(0,0,0,0.06)] flex items-center px-[10px] sm:px-[12px]">
+                <img src="img/Rectangle 2557.png" class="w-[54px] h-[56px] sm:w-[60px] sm:h-[62px] flex-shrink-0 rounded-[8px] border-[1.5px] border-[rgba(229,229,229,1)]" alt="" />
+                <div class="ml-[8px] sm:ml-[10px] min-w-0">
+                  <p class="text-[12px] sm:text-[13px] font-semibold leading-[1.4] truncate">Summer course camp</p>
+                  <p class="text-[9px] sm:text-[10px] leading-[1.5] text-gray-500">Oxford, United Kingdom</p>
+                  <div class="flex gap-[4px] sm:gap-[5px] mt-[4px] flex-wrap">
+                    <span class="px-[6px] sm:px-[8px] py-[3px] text-[8px] sm:text-[9px] bg-[rgba(243,249,224,1)] rounded-[15px] whitespace-nowrap">Enrolling now</span>
+                    <span class="px-[6px] sm:px-[8px] py-[3px] text-[8px] sm:text-[9px] bg-[rgba(247,234,238,1)] text-[rgba(94,8,33,1)] rounded-[15px] whitespace-nowrap">20% commission</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Card 3 -->
+          <div class="border-[0.7px] border-[rgba(234,234,234,1)] rounded-[15px] p-[16px] sm:p-[18px] md:p-[20px] bg-white sm:col-span-2">
+            <h3 class="text-[16px] sm:text-[17px] md:text-[18px] font-bold leading-[1.2]">Easy Profile Creation</h3>
+            <p class="mt-[8px] sm:mt-[10px] text-[12px] sm:text-[13px] md:text-[14px] leading-[1.7] text-gray-600">
+              Describe your organisation to start receiving inbound agency representation requests
+            </p>
+            <div class="mt-[16px] sm:mt-[20px] w-full max-w-[300px] sm:max-w-[340px] h-[66px] sm:h-[70px] bg-[rgba(211,233,158,1)] rounded-[6px] flex items-center justify-center px-[10px]">
+              <div class="w-full h-[36px] sm:h-[38px] bg-white rounded-[8px] border border-[rgba(200,200,200,1)] flex items-center justify-between px-[10px]">
+                <span class="text-[11px] sm:text-[12px] font-medium text-gray-600">Search by location</span>
+                <button class="h-[26px] sm:h-[29px] px-[10px] sm:px-[12px] rounded-[14px] bg-gradient-to-r from-[#394BE3] to-[#6F2CEF] text-white text-[9px] font-medium shadow-[0px_4px_29px_rgba(0,0,0,0.2)] whitespace-nowrap">
+                  Search
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End mobile layout -->
+
+      <!-- Desktop layout -->
+      <div class="desktop-provider-block relative w-full">
+        <img src="img/67ff928f851462f212f1bc41_UI Container-4 1.png"
+             class="bg-slab w-full h-auto block rounded-[15px]" alt="" />
+
+        <div class="desktop-content-layer">
+          <img src="img/xZvFfmkFXXUPqBSeZG18L6lWrE 1.png" class="w-full rounded-[20px]" alt="" />
+
+          <!-- Left text -->
+          <div class="desktop-left-text">
+            <h3 class="text-[16px] xl:text-[18px] font-extrabold text-black"># For Providers</h3>
+            <p class="mt-[8px] xl:mt-[10px] text-[12px] xl:text-[14px] font-medium leading-[18px] xl:leading-[20px] text-black">
+              From boarding schools to summer camps, language courses, foundation and more, our platform caters to all types of course.
+            </p>
+            <button class="mt-[8px] xl:mt-[10px] w-[160px] xl:w-[184px] h-[34px] xl:h-[38px] bg-[rgba(37,105,249,1)] rounded-[8px] text-white font-semibold text-[13px] xl:text-[16px]">
+              Join as a Provider
+            </button>
+          </div>
+
+          <!-- Right feature boxes -->
+          <div class="desktop-right-features pr-[20px] xl:pr-[20px]">
+            <div class="feature-item flex items-center gap-[5px] p-[8px] xl:p-[10px] bg-white rounded-[8px]">
+              <div class="w-[4px] h-[28px] flex-shrink-0 bg-[rgba(246,201,82,1)]"></div>
+              <p class="text-[11px] xl:text-[13px] font-medium leading-[15px] xl:leading-[17px]">Receive inbound requests from qualified agent partners</p>
+            </div>
+            <div class="feature-item flex items-center gap-[5px] p-[8px] xl:p-[10px] mt-[4px] xl:mt-[5px] bg-white rounded-[8px]">
+              <div class="w-[4px] h-[28px] flex-shrink-0 bg-[rgba(114,171,61,1)]"></div>
+              <p class="text-[11px] xl:text-[13px] font-medium leading-[15px] xl:leading-[17px]">Set your commission rates, payment terms and conditions</p>
+            </div>
+            <div class="feature-item flex items-center gap-[5px] p-[8px] xl:p-[10px] mt-[4px] xl:mt-[5px] bg-white rounded-[8px]">
+              <div class="w-[4px] h-[28px] flex-shrink-0 bg-[rgba(255,105,0,1)]"></div>
+              <p class="text-[11px] xl:text-[13px] font-medium leading-[15px] xl:leading-[17px]">Create rich programme listings with full detail pages</p>
+            </div>
+            <div class="feature-item flex items-center gap-[5px] p-[8px] xl:p-[10px] mt-[4px] xl:mt-[5px] bg-white rounded-[8px]">
+              <div class="w-[4px] h-[28px] flex-shrink-0 bg-[rgba(161,88,235,1)]"></div>
+              <p class="text-[11px] xl:text-[13px] font-medium leading-[15px] xl:leading-[17px]">Manage your entire agent network from one dashboard</p>
+            </div>
+            <div class="feature-item flex items-center gap-[5px] p-[8px] xl:p-[10px] mt-[4px] xl:mt-[5px] bg-white rounded-[8px]">
+              <div class="w-[4px] h-[28px] flex-shrink-0 bg-[rgba(246,201,82,1)]"></div>
+              <p class="text-[11px] xl:text-[13px] font-medium leading-[15px] xl:leading-[17px]">Review agent profiles before accepting connections</p>
+            </div>
+          </div>
+
+          <!-- Desktop 3 cards -->
+          <div class="mt-[30px] xl:mt-[40px] flex justify-center">
+            <div class="w-full max-w-[1222px] grid grid-cols-3 gap-[14px] xl:gap-[20px]">
+              <!-- Card 1 -->
+              <div class="card-item border-[0.7px] border-[rgba(234,234,234,1)] rounded-[15px] p-[14px] xl:p-[20px] bg-white">
+                <h3 class="text-[15px] xl:text-[18px] font-bold leading-[19px]">Easy Profile Creation</h3>
+                <p class="mt-[8px] xl:mt-[12px] text-[12px] xl:text-[14px] leading-[20px] xl:leading-[24px]">
+                  Describe your organisation to start receiving inbound agency representation requests
+                </p>
+                <div class="relative mt-[16px] xl:mt-[20px] w-full border-[0.7px] border-[rgba(234,234,234,1)] rounded-[15px] bg-white shadow-[0px_4px_15px_rgba(0,0,0,0.06)] p-[10px] xl:p-[12px]">
+                  <div class="relative flex items-center">
+                    <img src="img/Group 1000005445.png" class="w-[34px] h-[34px] xl:w-[39px] xl:h-[39px] rounded-[8px]" alt="" />
+                    <span class="ml-[8px] text-[11px] xl:text-[13px] font-semibold">Create profile</span>
+                    <img src="img/Rectangle 2556.png" class="absolute -top-[20px] xl:-top-[25px] right-[8px] xl:right-[10px] w-[56px] h-[54px] xl:w-[67px] xl:h-[65px] z-20" alt="" />
+                    <img src="img/Rectangle 2555.png" class="absolute -top-[16px] xl:-top-[20px] right-[-8px] xl:right-[-10px] w-[55px] h-[58px] xl:w-[66px] xl:h-[69px] z-10" alt="" />
+                  </div>
+                  <div class="mt-[10px] xl:mt-[12px] border-t border-[rgba(227,227,227,1)]"></div>
+                  <div class="flex gap-[2px] mt-[8px] xl:mt-[10px] overflow-hidden">
+                    <span class="px-[4px] xl:px-[5px] py-[3px] xl:py-[4px] text-[9px] xl:text-[10px] whitespace-nowrap text-[rgba(81,80,90,1)] bg-[rgba(239,238,245,1)] rounded-[12px]">Organisation type</span>
+                    <span class="px-[4px] xl:px-[5px] py-[3px] xl:py-[4px] text-[9px] xl:text-[10px] whitespace-nowrap text-[rgba(81,80,90,1)] bg-[rgba(239,238,245,1)] rounded-[12px]">Team members</span>
+                    <span class="px-[4px] xl:px-[5px] py-[3px] xl:py-[4px] text-[9px] xl:text-[10px] whitespace-nowrap text-[rgba(81,80,90,1)] bg-[rgba(239,238,245,1)] rounded-[12px]">Location</span>
+                    <span class="px-[4px] xl:px-[5px] py-[3px] xl:py-[4px] text-[9px] xl:text-[10px] whitespace-nowrap text-[rgba(81,80,90,1)] bg-[rgba(239,238,245,1)] rounded-[12px]">Agreements</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Card 2 -->
+              <div class="card-item border-[0.7px] border-[rgba(234,234,234,1)] rounded-[15px] p-[14px] xl:p-[20px] bg-white">
+                <h3 class="text-[15px] xl:text-[18px] font-bold">Easy Profile Creation</h3>
+                <p class="mt-[8px] xl:mt-[12px] text-[12px] xl:text-[14px] leading-[20px] xl:leading-[24px]">
+                  Describe your organisation to start receiving inbound agency representation requests
+                </p>
+                <div class="relative mt-[28px] xl:mt-[35px] w-full h-[90px] xl:h-[95px] overflow-hidden">
+                  <div class="absolute bottom-0 left-[12px] xl:left-[15px] right-0 h-[72px] xl:h-[77px] rounded-[11px] bg-white z-10 border-[0.3px] border-[rgba(200,200,200,1)] shadow-[0px_4px_15px_rgba(0,0,0,0.09)] flex items-center px-[10px] xl:px-[12px]">
+                    <img src="img/Group 1000005380.png" class="w-[36px] h-[64px] xl:w-[41px] xl:h-[70px] rounded-[8px] border border-white" alt="" />
+                  </div>
+                  <div class="absolute top-0 left-0 right-0 h-[78px] xl:h-[82px] rounded-[11px] bg-white z-20 border border-[rgba(220,220,220,1)] shadow-[0px_4px_10px_rgba(0,0,0,0.03)] flex items-center px-[10px] xl:px-[12px]">
+                    <img src="img/Rectangle 2557.png" class="w-[52px] h-[54px] lg:w-[56px] lg:h-[58px] xl:w-[64px] xl:h-[65px] flex-shrink-0 rounded-[8px] border-[1.5px] border-[rgba(229,229,229,1)]" alt="" />
+                    <div class="ml-[8px] xl:ml-[10px] min-w-0 flex-1">
+                      <p class="text-[11px] lg:text-[12px] xl:text-[13px] font-semibold leading-[20px] xl:leading-[24px] truncate">Summer course camp</p>
+                      <p class="text-[9px] xl:text-[10px] leading-[20px] xl:leading-[24px] text-gray-600">Oxford, United Kingdom</p>
+                      <div class="flex gap-[4px] xl:gap-[6px] mt-[2px] xl:mt-[4px] flex-wrap">
+                        <span class="px-[5px] xl:px-[8px] py-[2px] xl:py-[3px] text-[7px] lg:text-[8px] xl:text-[9px] bg-[rgba(243,249,224,1)] rounded-[15px] whitespace-nowrap">Enrolling now</span>
+                        <span class="px-[5px] xl:px-[8px] py-[2px] xl:py-[3px] text-[7px] lg:text-[8px] xl:text-[9px] bg-[rgba(247,234,238,1)] text-[rgba(94,8,33,1)] rounded-[15px] whitespace-nowrap">20% commission</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Card 3 -->
+              <div class="card-item border-[0.7px] border-[rgba(234,234,234,1)] rounded-[15px] p-[14px] xl:p-[20px] bg-white">
+                <h3 class="text-[15px] xl:text-[18px] font-bold">Easy Profile Creation</h3>
+                <p class="mt-[8px] xl:mt-[12px] text-[12px] xl:text-[14px] leading-[20px] xl:leading-[24px]">
+                  Describe your organisation to start receiving inbound agency representation requests
+                </p>
+                <div class="mt-[30px] xl:mt-[40px] w-full max-w-[280px] xl:max-w-[317px] h-[62px] xl:h-[70px] bg-[rgba(211,233,158,1)] rounded-[6px] flex items-center justify-center">
+                  <div class="w-[90%] h-[34px] xl:h-[38px] bg-white rounded-[8px] border border-[rgba(200,200,200,1)] flex items-center justify-between px-[8px] xl:px-[10px]">
+                    <span class="text-[11px] xl:text-[12px] font-medium text-gray-600">Search by location</span>
+                    <button class="h-[26px] xl:h-[29px] px-[8px] xl:px-[12px] rounded-[14px] bg-gradient-to-r from-[#394BE3] to-[#6F2CEF] text-white text-[8px] xl:text-[9px] font-medium shadow-[0px_4px_29px_rgba(0,0,0,0.2)] whitespace-nowrap">
+                      Search
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End desktop layout -->
+
+    </div>
+  </div>
+
+  <!-- Agent Content -->
+  <div id="agentContent" class="hidden">
+    <p class="text-center py-[40px] text-[16px] text-gray-500">Agent content here</p>
+  </div>
+</section>
+
+
+<script>
+  // Mobile menu toggle
+  function toggleMobileMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+
+  // Header scroll effect
+  window.addEventListener('scroll', function () {
+    const headerBox = document.getElementById('headerBox');
+    if (window.scrollY > 30) {
+      headerBox.classList.add('shadow-2xl', 'scale-[0.97]', 'backdrop-blur-xl', 'lg:py-4');
+      headerBox.classList.remove('lg:py-6');
+    } else {
+      headerBox.classList.remove('shadow-2xl', 'scale-[0.97]', 'backdrop-blur-xl', 'lg:py-4');
+      headerBox.classList.add('lg:py-6');
+    }
+  });
+
+  // Tab switching
+  function setTab(type) {
+    const providerTab     = document.getElementById('providerTab');
+    const agentTab        = document.getElementById('agentTab');
+    const providerContent = document.getElementById('providerContent');
+    const agentContent    = document.getElementById('agentContent');
+
+    if (type === 'provider') {
+      providerTab.style.background = 'rgba(11,10,41,1)';
+      providerTab.querySelector('span').style.color = 'white';
+      agentTab.style.background = 'transparent';
+      agentTab.querySelector('span').style.color = 'black';
+      providerContent.style.display = 'block';
+      agentContent.style.display = 'none';
+    } else {
+      agentTab.style.background = 'rgba(11,10,41,1)';
+      agentTab.querySelector('span').style.color = 'white';
+      providerTab.style.background = 'transparent';
+      providerTab.querySelector('span').style.color = 'black';
+      providerContent.style.display = 'none';
+      agentContent.style.display = 'block';
+    }
+  }
+
+  setTab('provider');
+
+  // Intersection Observer animations
+  document.addEventListener('DOMContentLoaded', () => {
+
+    // Reveal (About section)
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // Feature items (staggered slide-in)
+    const featureItems = document.querySelectorAll('.feature-item');
+    const featureObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const index = [...featureItems].indexOf(entry.target);
+          setTimeout(() => entry.target.classList.add('active'), index * 200);
+        }
+      });
+    }, { threshold: 0.2 });
+
+    featureItems.forEach(item => featureObserver.observe(item));
+
+    // Card items (staggered slide-up)
+    const cardItems = document.querySelectorAll('.card-item');
+    const cardObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const index = [...cardItems].indexOf(entry.target);
+          setTimeout(() => entry.target.classList.add('active'), index * 250);
+        }
+      });
+    }, { threshold: 0.2 });
+
+    cardItems.forEach(card => cardObserver.observe(card));
+  });
+</script>
+
+</body>
+</html>
